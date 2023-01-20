@@ -7,6 +7,10 @@
 
 import UIKit
 
+protocol SettingsViewControllerDelegate: AnyObject {
+    func colorFromSettingsVC(color: UIColor)
+}
+
 class SettingsViewController: UIViewController {
     
 
@@ -28,25 +32,26 @@ class SettingsViewController: UIViewController {
     
     @IBOutlet var viewColor: UIView!
     
+    // MARK: Properties
+    var definedColor: UIColor!
+    weak var delegate: SettingsViewControllerDelegate?
+    
     // MARK: Override Methods
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        
-        viewColor.layer.cornerRadius = 10
         
         // Sliders settings
-        blueSlider.minimumValue = 1
+        blueSlider.minimumValue = 0
         blueSlider.maximumValue = 255
-        blueSlider.value = 50
+        blueSlider.value = 150
         blueSlider.tag = 3
-        greenSlider.minimumValue = 1
+        greenSlider.minimumValue = 0
         greenSlider.maximumValue = 255
-        greenSlider.value = 100
+        greenSlider.value = 50
         greenSlider.tag = 2
-        redSlider.minimumValue = 1
+        redSlider.minimumValue = 0
         redSlider.maximumValue = 255
-        redSlider.value = 155
+        redSlider.value = 180
         redSlider.tag = 1
         
         // Text fields settings
@@ -58,7 +63,13 @@ class SettingsViewController: UIViewController {
         redValueLabel.text = String(Int(redSlider.value))
         greenValueLabel.text = String(Int(greenSlider.value))
         blueValueLabel.text = String(Int(blueSlider.value))
+        
+        // Color screen settings
+        viewColor.layer.cornerRadius = 10
+        setViewColorBackgroundColor()
     }
+    
+    
     
     // MARK: IB Actions
     @IBAction func slidersAction(_ sender: UISlider) {
@@ -67,17 +78,28 @@ class SettingsViewController: UIViewController {
         case 1:
             redValueLabel.text = sliderValue
             redTF.placeholder = sliderValue
+            viewColor.backgroundColor = UIColor(red: CGFloat(sender.value) / 255, green: CGFloat(greenSlider.value) / 255, blue: CGFloat(blueSlider.value) / 255, alpha: 1)
+            definedColor = viewColor.backgroundColor
         case 2:
             greenValueLabel.text = sliderValue
             greenTF.placeholder = sliderValue
+            viewColor.backgroundColor = UIColor(red: CGFloat(redSlider.value) / 255, green: CGFloat(sender.value) / 255, blue: CGFloat(blueSlider.value) / 255, alpha: 1)
+            definedColor = viewColor.backgroundColor
         case 3:
             blueValueLabel.text = sliderValue
             blueTF.placeholder = sliderValue
+            viewColor.backgroundColor = UIColor(red: CGFloat(redSlider.value) / 255, green: CGFloat(greenSlider.value) / 255, blue: CGFloat(sender.value) / 255, alpha: 1)
+            definedColor = viewColor.backgroundColor
         default:
             return
         }
     }
     
+    
+    @IBAction func doneButtonTapped() {
+        delegate?.colorFromSettingsVC(color: definedColor)
+        dismiss(animated: true)
+    }
     
 }
 
@@ -101,6 +123,8 @@ extension SettingsViewController: UITextFieldDelegate {
 
 // MARK: Private Methods
 extension SettingsViewController {
+    
+    // Alert Controller
     private func showAlert(title: String, message: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         let buttonOK = UIAlertAction(title: "OK", style: .default)
@@ -109,40 +133,49 @@ extension SettingsViewController {
     }
     
     private func changeSliderAndLabelsValues(textField: UITextField) {
+        // Unwrapping optional type
+        guard let text = textField.text else { return }
         // Cheking that text field is not empty
-        if !textField.text!.isEmpty {
-            // If not empty checking that entered number
-            guard let stringToInt = Int(textField.text!) else {
+        guard !text.isEmpty else { return }
+        // If not empty checking that entered number
+        guard let stringToFloat = Float(text) else {
                 showAlert(title: "Invalid value", message: "Please enter color value in numbers format from 0 to 255")
                 textField.text = ""
                 return
             }
-            // If entered number checking that number in valid range
-            guard 0...255 ~= stringToInt else {
+        // If entered number checking that number in valid range
+        guard 0...255 ~= stringToFloat else {
                 showAlert(title: "Invalid value", message: "Please enter color value in numbers format from 0 to 255")
                 textField.text = ""
                 return
             }
-        }
         switch textField {
         case redTF:
-            redTF.placeholder! = textField.text!.isEmpty ? String(Int(redSlider.value)) : textField.text!
-            redSlider.value = Float(textField.text!) ?? redSlider.value
-            redValueLabel.text = textField.text!.isEmpty ? String(Int(redSlider.value)) : textField.text!
+            redTF.placeholder = text
+            redSlider.value = stringToFloat
+            redValueLabel.text = text
             redTF.text = ""
+            setViewColorBackgroundColor()
         case greenTF:
-            greenTF.placeholder = textField.text!.isEmpty ? String(Int(greenSlider.value)) : textField.text!
-            greenSlider.value = Float(textField.text!) ?? greenSlider.value
-            greenValueLabel.text = textField.text!.isEmpty ? String(Int(greenSlider.value)) : textField.text!
+            greenTF.placeholder = text
+            greenSlider.value = stringToFloat
+            greenValueLabel.text = text
             greenTF.text = ""
+            setViewColorBackgroundColor()
         case blueTF:
-            blueTF.placeholder = textField.text!.isEmpty ? String(Int(blueSlider.value)) : textField.text!
-            blueSlider.value = Float(textField.text!) ?? blueSlider.value
-            blueValueLabel.text = textField.text!.isEmpty ? String(Int(blueSlider.value)) : textField.text!
+            blueTF.placeholder = text
+            blueSlider.value = stringToFloat
+            blueValueLabel.text = text
             blueTF.text = ""
+            setViewColorBackgroundColor()
         default:
             return
         }
+    }
+    
+    private func setViewColorBackgroundColor() {
+        viewColor.backgroundColor = UIColor(red: CGFloat(redSlider.value) / 255, green: CGFloat(greenSlider.value) / 255, blue: CGFloat(blueSlider.value) / 255, alpha: 1)
+        definedColor = viewColor.backgroundColor
     }
     
 }

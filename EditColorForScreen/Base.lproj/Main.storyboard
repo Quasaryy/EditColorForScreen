@@ -31,7 +31,7 @@
             </objects>
             <point key="canvasLocation" x="708" y="2"/>
         </scene>
-        <!--Settings View Controller-->
+        <!--Settings-->
         <scene sceneID="XH3-mR-zuE">
             <objects>
                 <viewController id="cDF-Q8-pAA" customClass="SettingsViewController" customModule="EditColorForScreen" customModuleProvider="target" sceneMemberID="viewController">
@@ -163,6 +163,9 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="25"/>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                 <state key="normal" title="Done"/>
+                                <connections>
+                                    <action selector="doneButtonTapped" destination="cDF-Q8-pAA" eventType="touchUpInside" id="ohR-XO-Nr9"/>
+                                </connections>
                             </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="oYO-XZ-3mc"/>
@@ -178,7 +181,7 @@
                             <constraint firstItem="4bj-Xh-7EP" firstAttribute="top" secondItem="Krk-T5-BCT" secondAttribute="bottom" constant="40" id="ssl-Lp-GXR"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" id="fea-ng-r0B"/>
+                    <navigationItem key="navigationItem" title="Settings" id="fea-ng-r0B"/>
                     <connections>
                         <outlet property="blueSlider" destination="YbE-68-bkK" id="iAi-nR-5Ki"/>
                         <outlet property="blueTF" destination="XKw-Wc-YhD" id="htU-Em-Fad"/>
