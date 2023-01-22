@@ -43,26 +43,27 @@ class SettingsViewController: UIViewController {
         // Sliders settings
         blueSlider.minimumValue = 0
         blueSlider.maximumValue = 255
-        blueSlider.value = 150
         blueSlider.tag = 3
+        blueSlider.minimumTrackTintColor = .systemBlue
         greenSlider.minimumValue = 0
         greenSlider.maximumValue = 255
-        greenSlider.value = 50
         greenSlider.tag = 2
+        greenSlider.minimumTrackTintColor = .systemGreen
         redSlider.minimumValue = 0
         redSlider.maximumValue = 255
-        redSlider.value = 180
         redSlider.tag = 1
+        redSlider.minimumTrackTintColor = .systemRed
+        colorForSliderValue()
         
         // Text fields settings
-        redTF.placeholder = String(Int(redSlider.value))
-        greenTF.placeholder = String(Int(greenSlider.value))
-        blueTF.placeholder = String(Int(blueSlider.value))
+        redTF.placeholder = string(from: redSlider)
+        greenTF.placeholder = string(from: greenSlider)
+        blueTF.placeholder = string(from: blueSlider)
         
         // Color labels settings
-        redValueLabel.text = String(Int(redSlider.value))
-        greenValueLabel.text = String(Int(greenSlider.value))
-        blueValueLabel.text = String(Int(blueSlider.value))
+        redValueLabel.text = string(from: redSlider)
+        greenValueLabel.text = string(from: greenSlider)
+        blueValueLabel.text = string(from: blueSlider)
         
         // Color screen settings
         viewColor.layer.cornerRadius = 10
@@ -73,23 +74,20 @@ class SettingsViewController: UIViewController {
     
     // MARK: IB Actions
     @IBAction func slidersAction(_ sender: UISlider) {
-        let sliderValue = String(Int((sender.value)))
+        let sliderValue = string(from: sender)
         switch sender.tag {
         case 1:
             redValueLabel.text = sliderValue
             redTF.placeholder = sliderValue
-            viewColor.backgroundColor = UIColor(red: CGFloat(sender.value) / 255, green: CGFloat(greenSlider.value) / 255, blue: CGFloat(blueSlider.value) / 255, alpha: 1)
-            definedColor = viewColor.backgroundColor
+            setViewColorBackgroundColor()
         case 2:
             greenValueLabel.text = sliderValue
             greenTF.placeholder = sliderValue
-            viewColor.backgroundColor = UIColor(red: CGFloat(redSlider.value) / 255, green: CGFloat(sender.value) / 255, blue: CGFloat(blueSlider.value) / 255, alpha: 1)
-            definedColor = viewColor.backgroundColor
+            setViewColorBackgroundColor()
         case 3:
             blueValueLabel.text = sliderValue
             blueTF.placeholder = sliderValue
-            viewColor.backgroundColor = UIColor(red: CGFloat(redSlider.value) / 255, green: CGFloat(greenSlider.value) / 255, blue: CGFloat(sender.value) / 255, alpha: 1)
-            definedColor = viewColor.backgroundColor
+            setViewColorBackgroundColor()
         default:
             return
         }
@@ -173,9 +171,20 @@ extension SettingsViewController {
         }
     }
     
-    private func setViewColorBackgroundColor() {
-        viewColor.backgroundColor = UIColor(red: CGFloat(redSlider.value) / 255, green: CGFloat(greenSlider.value) / 255, blue: CGFloat(blueSlider.value) / 255, alpha: 1)
-        definedColor = viewColor.backgroundColor
+    private func string(from slider: UISlider) -> String {
+        return String(format: "%.0f", slider.value)
     }
     
+    // Getting colors from FirstVC view.backgroundColor to setup slider.value
+    private func colorForSliderValue() {
+        let ciColor = CIColor(color: definedColor)
+        redSlider.value = Float(ciColor.red) * 255
+        greenSlider.value = Float(ciColor.green) * 255
+        blueSlider.value = Float(ciColor.blue) * 255
+    }
+    
+    private func setViewColorBackgroundColor() {
+        viewColor.backgroundColor = UIColor(red: CGFloat(redSlider.value / 255), green: CGFloat(greenSlider.value / 255), blue: CGFloat(blueSlider.value / 255), alpha: 1)
+        definedColor = viewColor.backgroundColor
+    }
 }
