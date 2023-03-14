@@ -15,9 +15,9 @@ class FirstViewController: UIViewController {
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        let settingsVC = segue.destination as! SettingsViewController
-        settingsVC.definedColor = view.backgroundColor
-        settingsVC.delegate = self
+        let settingsVC = segue.destination as? SettingsViewController
+        settingsVC?.definedColor = view.backgroundColor
+        settingsVC?.delegate = self
     }
 
 }
